@@ -9,6 +9,7 @@ const PRECACHE = [
   'index.html',
   'style.css',
   'js/app.js',
+  'js/wstg-versions.js',
   'manifest.webmanifest',
   'icons/icon.svg',
   'js/data-info.js',

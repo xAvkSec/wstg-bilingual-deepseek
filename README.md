@@ -4,7 +4,7 @@ A bilingual (English ↔ Bahasa Indonesia) web version of the **OWASP Web Securi
 
 ## What this is
 
-All **12 categories, 115 tests** of the WSTG (latest development version) rendered as a modern, minimalist web app with EN/ID side-by-side columns — built for learning, not for certification-reference fidelity.
+All **12 categories, 115 tests** — the complete **OWASP WSTG v4.2** (97 tests) plus **18 tests added after v4.2** — rendered as a modern, minimalist web app with EN/ID side-by-side columns. Every test carries its official `WSTG-v42-<CAT>-<nn>` identifier; post-4.2 tests show a `dev` badge. Built for learning, not for certification-reference fidelity.
 
 ## Open it
 
@@ -28,6 +28,7 @@ Double-click `index.html`. No server, no install, no build step — works offlin
 - **Per-test navigation & print** — a section **TOC** (Summary / How to Test / Tools / Remediation) that follows the active language, a **reading-progress bar** in the sticky controls, and a **print/PDF stylesheet** (+ `⎙ Print`) that strips the chrome and prints just the guide content
 - **Installable & offline (PWA)** — `manifest.webmanifest` + a cache-first **service worker** precache the whole app shell, so it installs to the home screen and opens with no network (over http; `file://` still works without it)
 - **Fast first paint** — the ~540 KB of test content is **lazy-loaded** after paint instead of blocking the initial render
+- **Version-aware** — each test is tagged with its official **WSTG v4.2** identifier (`WSTG-v42-INPV-05`); the 18 tests added after 4.2 show a `dev` badge. Counts are shown on Home; `js/wstg-versions.js` holds the tag per test (guarded by a unit test)
 - **Multi-guide** — a guide registry + sidebar **guide switcher**. Ships with **OWASP WSTG** and **OWASP API Security Top 10 (2023)**; progress/notes/bookmarks/review are scoped per guide (WSTG keeps the shared `ci-ti` keys so the tracker still syncs; other guides are namespaced `<id>:ci-ti`). Add a guide by registering it in `GUIDES` (`js/app.js`) and dropping in a `js/guide-*.js` data file
 - **Study mode** — turn reading into practice:
   - **Per-test notes** (autosaved) and **bookmarks** (☆ on any test, ★ markers in the sidebar/cards)
@@ -116,6 +117,6 @@ CI: `.github/workflows/ci.yml` runs `npm test` on push/PR (installs the Chrome c
 
 ## Attribution
 
-Condensed adaptation of the [OWASP Web Security Testing Guide](https://owasp.github.io/www-project-web-security-testing-guide/latest/), licensed CC BY-SA 4.0. This project is a learning aid; the official guide remains the authoritative reference.
+Condensed adaptation of the [OWASP Web Security Testing Guide **v4.2**](https://owasp.org/www-project-web-security-testing-guide/v42/) (plus post-4.2 development tests), licensed CC BY-SA 4.0. Version tags come from the official `OWASP/wstg` `v4.2` checklist. This project is a learning aid; the official guide remains the authoritative reference.
 
 Built with x 💛

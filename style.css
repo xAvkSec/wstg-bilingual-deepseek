@@ -295,6 +295,12 @@ body.sidebar-collapsed .nav-mini { display:block; width:36px; height:3px; }
   background:var(--accent-soft); color:var(--accent);
   padding:5px 10px; border-radius:6px; flex-shrink:0; margin-top:5px;
 }
+.ver-badge {
+  display:inline-block; vertical-align:middle; margin:5px 0 0 6px;
+  font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--text-muted); background:var(--bg-subtle); border:1px solid var(--border);
+  border-radius:99px; padding:3px 8px; flex-shrink:0;
+}
 .test-title-en { font-size:24px; font-weight:800; letter-spacing:-.02em; line-height:1.25; }
 .test-title-id { font-size:15px; color:var(--text-muted); margin-top:2px; }
 
@@ -341,7 +347,7 @@ body.sidebar-collapsed .nav-mini { display:block; width:36px; height:3px; }
 .lang-col.id .lang-tag { color:var(--id-accent); }
 .lang-col.id { background:var(--id-tint); border-radius:var(--radius-sm); padding:0 14px 10px; margin-top:0; }
 .lang-col.en { padding-right:6px; }
-.lang-title { font-size:19px; font-weight:700; line-height:1.3; margin-bottom:10px; }
+.lang-title { font-size:19px; font-weight:700; line-height:1.3; margin-bottom:10px; overflow-wrap:anywhere; }
 .lang-col.id .lang-title { color:var(--id-accent); }
 
 /* single-language mode: collapse the grid on the SAME element that carries the mode class */
@@ -357,12 +363,13 @@ body.sidebar-collapsed .nav-mini { display:block; width:36px; height:3px; }
   font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:8px;
 }
 .tsection h3::after { content:''; flex:1; height:1px; background:var(--border); }
-.tsection p { margin-bottom:10px; font-size:14px; }
+.tsection p { margin-bottom:10px; font-size:14px; overflow-wrap:anywhere; }
 .tsection ul, .tsection ol { margin:0 0 10px 20px; font-size:14px; }
-.tsection li { margin-bottom:5px; }
+.tsection li { margin-bottom:5px; overflow-wrap:anywhere; }
 .tsection code {
   font-family:var(--mono); font-size:12.5px; background:var(--bg-code);
   border:1px solid var(--border); border-radius:4px; padding:1px 5px; cursor:copy;
+  overflow-wrap:anywhere; word-break:break-word;   /* long URLs / JSON must not overflow */
 }
 .tsection code:hover { border-color:var(--accent); color:var(--text); }
 .tsection pre {

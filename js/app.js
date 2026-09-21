@@ -102,6 +102,18 @@ async function switchGuide(id) {
 const byCode = c => DATA.find(d => d.code === c);
 const flatAt = (code, num) => FLAT.find(f => f.code === code && f.num === num);
 
+/* WSTG version tag for a test: a v4.2 identifier, or 'dev' for post-4.2 tests */
+function wstgVersion(ci, ti) {
+  const code = DATA[ci] && DATA[ci].code;
+  const arr = (window.WSTG_VERSIONS || {})[code];
+  return (arr && arr[ti]) || null;
+}
+function versionCounts() {
+  let v42 = 0, dev = 0;
+  FLAT.forEach(f => { const v = wstgVersion(f.ci, f.ti); if (v === 'dev') dev++; else if (v) v42++; });
+  return { v42, dev };
+}
+
 /* ---------------- helpers ---------------- */
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 /* escape, then turn `backtick commands` into <code> */
@@ -588,6 +600,7 @@ function renderHome() {
   const total = FLAT.length;
   const done = studiedCount();
   const pct = total ? Math.round(done / total * 100) : 0;
+  const vc = versionCounts();
   const target = resumeTarget();
   const label = store.lastTest && flatAt(store.lastTest.code, store.lastTest.num)
     ? 'Continue / Lanjutkan'
@@ -603,7 +616,7 @@ function renderHome() {
       <div class="stat-ring">${ringSvg(pct)}</div>
       <div class="stat-body">
         <div class="stat-line"><strong>${done}</strong> / ${total} tests studied</div>
-        <div class="stat-sub">${DATA.length} categories · CC BY-SA 4.0 adaptation</div>
+        <div class="stat-sub">${DATA.length} categories · <strong>${vc.v42}</strong> WSTG v4.2${vc.dev ? ` + <strong>${vc.dev}</strong> dev` : ''} · CC BY-SA 4.0</div>
         <div class="home-actions">
           <a class="btn primary" href="#/test/${target.code}/${target.num}">▶ ${label} · <span class="mono">${target.code}-${target.num}</span></a>
           <a class="btn" href="#/study">Study / Belajar</a>
@@ -687,6 +700,7 @@ function renderTest(r) {
   const prev = FLAT[fi - 1], next = FLAT[fi + 1];
   const st = isStudied(ci, ti);
   const bm = isBookmarked(ci, ti);
+  const ver = wstgVersion(ci, ti);
 
   const enCol = `
     <div class="lang-col en" lang="en"><span class="lang-tag">English</span>
@@ -712,7 +726,7 @@ function renderTest(r) {
   main.innerHTML = `
     <div class="crumb"><a href="#/">Home</a> / <a href="#/cat/${cat.code}">${cat.code} — ${esc(cat.name_en)}</a> / ${cat.code}-${r.num}</div>
     <div class="test-head">
-      <span class="test-id-chip">WSTG-${cat.code}-${r.num}</span>
+      <span class="test-id-chip">${ver && ver !== 'dev' ? ver : `WSTG-${cat.code}-${r.num}`}</span>${ver === 'dev' ? '<span class="ver-badge" title="Ditambahkan setelah WSTG v4.2 / added after v4.2">dev</span>' : ''}
       <div>
         <div class="test-title-en" lang="en">${esc(t.name_en)}</div>
         <div class="test-title-id" lang="id">${esc(idText(t.name_id))}</div>

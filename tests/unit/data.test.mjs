@@ -206,3 +206,38 @@ test('tracker alignment: positionally-aligned English names match (prefix-normal
     });
   });
 });
+
+/* ---- WSTG version tagging (js/wstg-versions.js) ---- */
+
+function loadVersions() {
+  const sandbox = { window: {} };
+  vm.createContext(sandbox);
+  vm.runInContext(fs.readFileSync(path.join(jsDir, 'wstg-versions.js'), 'utf8'), sandbox, { filename: 'wstg-versions.js' });
+  return sandbox.window.WSTG_VERSIONS;
+}
+const VERSIONS = loadVersions();
+
+test('versions: every category has one tag per test', () => {
+  // Array.from materializes both sides in the local realm (DATA is vm-realm)
+  assert.deepEqual(Array.from(Object.keys(VERSIONS)).sort(), Array.from(DATA, (c) => c.code).sort(), 'category set mismatch');
+  for (const c of DATA) {
+    assert.equal(VERSIONS[c.code].length, c.tests.length, `${c.code}: ${VERSIONS[c.code].length} tags vs ${c.tests.length} tests`);
+  }
+});
+
+test('versions: totals are 97 WSTG v4.2 + 18 dev', () => {
+  const counts = { v42: 0, dev: 0 };
+  for (const c of DATA) for (const tag of VERSIONS[c.code]) counts[tag === 'dev' ? 'dev' : 'v42']++;
+  assert.deepEqual(counts, { v42: 97, dev: 18 });
+});
+
+test('versions: v4.2 tags are well-formed and match their category', () => {
+  for (const c of DATA) {
+    VERSIONS[c.code].forEach((tag, i) => {
+      if (tag === 'dev') return;
+      const m = /^WSTG-v42-([A-Z]{4})-(\d{2})$/.exec(tag);
+      assert.ok(m, `${c.code}[${i}]: malformed tag ${tag}`);
+      assert.equal(m[1], c.code, `${c.code}[${i}]: tag category ${m[1]} != ${c.code}`);
+    });
+  }
+});
