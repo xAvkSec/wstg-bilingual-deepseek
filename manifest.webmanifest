@@ -1,0 +1,20 @@
+{
+  "name": "WSTG Bilingual — Panduan Pengujian Keamanan Web",
+  "short_name": "WSTG·ID",
+  "description": "Bilingual English / Bahasa Indonesia reader for the OWASP Web Security Testing Guide — 12 categories, 115 tests, offline-ready.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f1115",
+  "theme_color": "#10b981",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

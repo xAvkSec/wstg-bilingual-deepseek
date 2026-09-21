@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WSTG Tracker — OWASP Web Security Testing Guide</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --bg-card: #ffffff;
+    --bg-subtle: #f3f4f6;
+    --border: #e5e7eb;
+    --border-strong: #d1d5db;
+    --text: #1a1d23;
+    --text-muted: #6b7280;
+    --text-faint: #9ca3af;
+    --accent: #10b981;
+    --accent-soft: rgba(16, 185, 129, 0.1);
+    --accent-border: rgba(16, 185, 129, 0.3);
+    --warn: #f59e0b;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-hover: 0 4px 16px rgba(0,0,0,0.08);
+    --mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+  }
+  [data-theme="dark"] {
+    --bg: #0f1115;
+    --bg-card: #16191f;
+    --bg-subtle: #1c2028;
+    --border: #262b34;
+    --border-strong: #363d49;
+    --text: #e8eaed;
+    --text-muted: #9aa1ad;
+    --text-faint: #6b7280;
+    --accent: #34d399;
+    --accent-soft: rgba(52, 211, 153, 0.12);
+    --accent-border: rgba(52, 211, 153, 0.35);
+    --shadow: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-hover: 0 4px 16px rgba(0,0,0,0.5);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+    transition: background 0.25s, color 0.25s;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    max-width: 960px; margin: 0 auto; padding: 16px 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; }
+  .brand h1 { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+  .brand span { font-size: 12px; color: var(--text-faint); font-family: var(--mono); }
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .icon-btn {
+    border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted);
+    border-radius: var(--radius-sm); padding: 7px 12px; cursor: pointer; font-size: 13px;
+    transition: all 0.15s;
+  }
+  .icon-btn:hover { border-color: var(--border-strong); color: var(--text); }
+
+  /* ---------- progress strip ---------- */
+  .progress-strip {
+    max-width: 960px; margin: 0 auto; padding: 10px 24px 14px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .progress-label { font-size: 12px; color: var(--text-muted); white-space: nowrap; font-family: var(--mono); }
+  .progress-track { flex: 1; height: 6px; background: var(--bg-subtle); border-radius: 99px; overflow: hidden; }
+  .progress-fill {
+    height: 100%; background: var(--accent); border-radius: 99px;
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .progress-pct { font-size: 13px; font-weight: 600; color: var(--accent); font-family: var(--mono); min-width: 52px; text-align: right; }
+
+  /* ---------- layout ---------- */
+  main { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
+  .section-title {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint); font-weight: 600; margin: 36px 0 16px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* ---------- schedule ---------- */
+  .schedule-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px;
+  }
+  .week-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 16px; box-shadow: var(--shadow);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    cursor: pointer; position: relative; overflow: hidden;
+  }
+  .week-card:hover { border-color: var(--accent-border); box-shadow: var(--shadow-hover); transform: translateY(-1px); }
+  .week-card .wk {
+    font-family: var(--mono); font-size: 11px; color: var(--text-faint); font-weight: 600;
+  }
+  .week-card .wk-name { font-size: 14px; font-weight: 600; margin: 2px 0; }
+  .week-card .wk-meta { font-size: 12px; color: var(--text-muted); }
+  .week-card .wk-bar {
+    margin-top: 10px; height: 4px; background: var(--bg-subtle); border-radius: 99px; overflow: hidden;
+  }
+  .week-card .wk-bar-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s; }
+  .week-card.done::after {
+    content: '✓'; position: absolute; top: 10px; right: 12px;
+    color: var(--accent); font-size: 13px; font-weight: 700;
+  }
+  .week-card.active { border-color: var(--accent); }
+
+  /* ---------- category cards ---------- */
+  .cat-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .cat-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .cat-card:hover { border-color: var(--border-strong); }
+  .cat-card.open { border-color: var(--accent-border); box-shadow: var(--shadow-hover); }
+  .cat-head {
+    display: flex; align-items: center; gap: 14px; padding: 16px 18px; cursor: pointer;
+    user-select: none;
+  }
+  .cat-head:hover { background: var(--bg-subtle); }
+  .cat-code {
+    font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+    background: var(--accent-soft); color: var(--accent);
+    padding: 4px 10px; border-radius: 6px; flex-shrink: 0;
+  }
+  .cat-info { flex: 1; min-width: 0; }
+  .cat-name { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .cat-meta { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .cat-progress { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .cat-count { font-family: var(--mono); font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+  .cat-ring { position: relative; width: 34px; height: 34px; flex-shrink: 0; }
+  .cat-ring svg { transform: rotate(-90deg); }
+  .cat-ring .ring-bg { stroke: var(--bg-subtle); }
+  .cat-ring .ring-fg { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+  .cat-ring .ring-text {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 9.5px; font-weight: 700; color: var(--text-muted); font-family: var(--mono);
+  }
+  .cat-chevron { color: var(--text-faint); transition: transform 0.25s; flex-shrink: 0; font-size: 12px; }
+  .cat-card.open .cat-chevron { transform: rotate(90deg); }
+
+  .cat-body { display: none; padding: 4px 18px 18px; }
+  .cat-card.open .cat-body { display: block; animation: slideIn 0.25s ease; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- tests checklist ---------- */
+  .test-list { list-style: none; }
+  .test-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 9px 10px; border-radius: var(--radius-sm);
+    cursor: pointer; transition: background 0.12s;
+  }
+  .test-item:hover { background: var(--bg-subtle); }
+  .test-item input[type="checkbox"] { display: none; }
+  .checkbox {
+    width: 18px; height: 18px; border: 2px solid var(--border-strong); border-radius: 5px;
+    flex-shrink: 0; margin-top: 2px; position: relative; transition: all 0.15s; cursor: pointer;
+  }
+  .test-item:hover .checkbox { border-color: var(--accent); }
+  .test-item.checked .checkbox { background: var(--accent); border-color: var(--accent); }
+  .test-item.checked .checkbox::after {
+    content: ''; position: absolute; left: 4.5px; top: 1px; width: 5px; height: 9px;
+    border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+  .test-id { font-family: var(--mono); font-size: 12px; color: var(--text-faint); margin-right: 8px; }
+  .test-item.checked .test-name { color: var(--text-faint); text-decoration: line-through; }
+  .test-item.checked .test-id { color: var(--accent); opacity: 0.7; }
+  .test-name { font-size: 14px; transition: color 0.15s; }
+
+  /* ---------- per-test flags & notes ---------- */
+  .test-body { flex: 1; min-width: 0; }
+  .test-line { display: flex; align-items: flex-start; gap: 8px; }
+  .test-text { flex: 1; min-width: 0; }
+  .test-flags { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .test-star { color: var(--warn); font-size: 13px; line-height: 1.4; }
+  .srs-chip {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    min-width: 16px; height: 16px; padding: 0 4px; border-radius: 5px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--accent-soft); color: var(--accent);
+    border: 1px solid var(--accent-border);
+  }
+  .srs-chip.due { background: rgba(245, 158, 11, 0.14); color: var(--warn); border-color: rgba(245, 158, 11, 0.4); }
+  .test-note-btn {
+    border: 1px solid var(--border); background: var(--bg-card); color: var(--text-faint);
+    border-radius: 6px; cursor: pointer; font-size: 12px; line-height: 1; padding: 3px 6px;
+    transition: all 0.15s;
+  }
+  .test-note-btn:hover { border-color: var(--border-strong); color: var(--text); }
+  .test-note-btn.has-note { color: var(--accent); border-color: var(--accent-border); background: var(--accent-soft); }
+  .test-note { display: none; margin-top: 8px; }
+  .test-note.open { display: block; animation: slideIn 0.2s ease; }
+  .test-note .test-note-ta { min-height: 64px; font-size: 13px; }
+
+  /* ---------- notes ---------- */
+  .notes-wrap { margin-top: 14px; }
+  .notes-label {
+    font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .notes-status { font-weight: 400; color: var(--text-faint); font-size: 11px; font-family: var(--mono); }
+  textarea {
+    width: 100%; min-height: 90px; resize: vertical;
+    background: var(--bg-subtle); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    padding: 12px 14px; font-family: inherit; font-size: 13.5px; line-height: 1.6;
+    transition: border-color 0.2s; outline: none;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--text-faint); }
+
+  /* ---------- resources ---------- */
+  .res-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .res-card {
+    display: flex; align-items: center; gap: 12px; text-decoration: none;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 16px; box-shadow: var(--shadow); color: var(--text);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+  .res-card:hover { border-color: var(--accent-border); box-shadow: var(--shadow-hover); transform: translateY(-1px); }
+  .res-icon { font-size: 18px; flex-shrink: 0; }
+  .res-name { font-size: 14px; font-weight: 600; }
+  .res-desc { font-size: 12px; color: var(--text-muted); }
+
+  footer {
+    border-top: 1px solid var(--border); text-align: center;
+    padding: 28px 24px; color: var(--text-faint); font-size: 12.5px;
+  }
+  footer code { font-family: var(--mono); background: var(--bg-subtle); padding: 2px 6px; border-radius: 4px; }
+
+  /* ---------- toast ---------- */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 99px;
+    font-size: 13px; font-weight: 500; box-shadow: var(--shadow-hover);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); z-index: 100;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 640px) {
+    .header-inner { padding: 12px 16px; flex-wrap: wrap; }
+    main { padding: 20px 16px 60px; }
+    .progress-strip { padding: 8px 16px 12px; }
+    .cat-progress .cat-count { display: none; }
+    .brand h1 { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <h1>WSTG Tracker</h1>
+      <span>v-latest · 12 categories</span>
+    </div>
+    <div class="header-actions">
+      <a class="icon-btn" href="../" title="Back to the bilingual reader">← Reader</a>
+      <button class="icon-btn" id="exportBtn" title="Export progress + notes as JSON">Export</button>
+      <button class="icon-btn" id="importBtn" title="Import a previously exported JSON">Import</button>
+      <button class="icon-btn" id="themeBtn" title="Toggle light / dark">◐</button>
+    </div>
+  </div>
+  <div class="progress-strip">
+    <span class="progress-label" id="overallLabel">0 / 0 tests</span>
+    <div class="progress-track"><div class="progress-fill" id="overallFill" style="width:0%"></div></div>
+    <span class="progress-pct" id="overallPct">0%</span>
+  </div>
+  <input type="file" id="importFile" accept="application/json" style="display:none">
+</header>
+
+<main>
+  <h2 class="section-title">Weekly Schedule — Phase 2</h2>
+  <div class="schedule-grid" id="scheduleGrid"></div>
+
+  <h2 class="section-title">Categories &amp; Test Checklist</h2>
+  <div class="cat-grid" id="catGrid"></div>
+
+  <h2 class="section-title">Resources</h2>
+  <div class="res-grid">
+    <a class="res-card" href="https://owasp.github.io/www-project-web-security-testing-guide/latest/" target="_blank" rel="noopener">
+      <span class="res-icon">📖</span>
+      <span><span class="res-name">WSTG — Latest Docs</span><br><span class="res-desc">The guide itself, /latest development version</span></span>
+    </a>
+    <a class="res-card" href="https://github.com/OWASP/wstg/releases" target="_blank" rel="noopener">
+      <span class="res-icon">🏷️</span>
+      <span><span class="res-name">WSTG Releases</span><br><span class="res-desc">Stable versioned releases (v4.2 anchor)</span></span>
+    </a>
+    <a class="res-card" href="https://owasp.org/www-project-juice-shop/" target="_blank" rel="noopener">
+      <span class="res-icon">🧃</span>
+      <span><span class="res-name">OWASP Juice Shop</span><br><span class="res-desc">Your lab target — run it with Docker</span></span>
+    </a>
+    <a class="res-card" href="https://portswigger.net/web-security" target="_blank" rel="noopener">
+      <span class="res-icon">🎓</span>
+      <span><span class="res-name">PortSwigger Academy</span><br><span class="res-desc">Free labs mapping ~1:1 to WSTG categories</span></span>
+    </a>
+    <a class="res-card" href="https://owasp.org/www-project-zap/" target="_blank" rel="noopener">
+      <span class="res-icon">🛡️</span>
+      <span><span class="res-name">OWASP ZAP</span><br><span class="res-desc">Free proxy &amp; scanner — confirm, never replace</span></span>
+    </a>
+    <a class="res-card" href="https://owasp.org/www-project-top-ten/" target="_blank" rel="noopener">
+      <span class="res-icon">🔟</span>
+      <span><span class="res-name">OWASP Top 10</span><br><span class="res-desc">The risk list WSTG tests map back to</span></span>
+    </a>
+  </div>
+</main>
+
+<footer>
+  Progress and notes are saved locally in your browser via <code>localStorage</code>. Export regularly — your data lives only in this browser.
+  <br>Built with x 💛 for x WSTG journey.
+</footer>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+/* ---------------- data: 12 categories, ~100 tests (WSTG /latest) ---------------- */
+const CATEGORIES = [
+  { code:'INFO', week:'Week 1', name:'Information Gathering', desc:'Recon & fingerprinting', tests:[
+    'Conduct Search Engine Reconnaissance for Information Leakage',
+    'Fingerprint Web Server',
+    'Review Webserver Metafiles for Information Leakage',
+    'Attack Surface Identification',
+    'Review Web Page Content for Information Leakage',
+    'Identify Application Entry Points',
+    'Map Execution Paths Through Application',
+    'Fingerprint Web Application Framework',
+    'Fingerprint Web Application',
+    'Map Application Architecture',
+  ]},
+  { code:'CONF', week:'Week 2', name:'Configuration & Deployment Management', desc:'Headers, HSTS, CSP, cloud', tests:[
+    'Network Infrastructure Configuration',
+    'Application Platform Configuration',
+    'File Extensions Handling for Sensitive Information',
+    'Review Old Backup and Unreferenced Files for Sensitive Information',
+    'Enumerate Infrastructure and Application Admin Interfaces',
+    'HTTP Methods',
+    'HTTP Strict Transport Security',
+    'RIA Cross Domain Policy',
+    'File Permission',
+    'Subdomain Takeover',
+    'Cloud Storage',
+    'Content Security Policy',
+    'Path Confusion',
+    'Other HTTP Security Header Misconfigurations',
+  ]},
+  { code:'IDNT', week:'Week 3', name:'Identity Management', desc:'Registration & provisioning', tests:[
+    'Role Definitions',
+    'User Registration Process',
+    'Account Provisioning Process',
+    'Account Enumeration and Guessable User Account',
+    'Weak or Unenforced Username Policy',
+  ]},
+  { code:'ATHN', week:'Week 3', name:'Authentication', desc:'Lockout, MFA, password reset', tests:[
+    'Credentials Transported over an Encrypted Channel',
+    'Default Credentials',
+    'Weak Lock Out Mechanism',
+    'Bypassing Authentication Schema',
+    'Vulnerable Remember Password',
+    'Browser Cache Weaknesses',
+    'Weak Password Policy or Implementation',
+    'Weak Security Question Answer',
+    'Weak Password Change or Reset Functionalities',
+    'Weaker Authentication in Alternative Channel',
+    'Multi-Factor Authentication',
+  ]},
+  { code:'ATHZ', week:'Week 4', name:'Authorization', desc:'IDOR, privilege escalation, OAuth', tests:[
+    'Directory Traversal File Include',
+    'Bypassing Authorization Schema',
+    'Privilege Escalation',
+    'Insecure Direct Object References',
+    'OAuth Weaknesses',
+  ]},
+  { code:'SESS', week:'Week 5', name:'Session Management', desc:'Cookies, CSRF, JWT', tests:[
+    'Session Management Schema',
+    'Cookies Attributes',
+    'Session Fixation',
+    'Exposed Session Variables',
+    'Cross Site Request Forgery',
+    'Logout Functionality',
+    'Session Timeout',
+    'Session Puzzling',
+    'Session Hijacking',
+    'JSON Web Tokens',
+    'Concurrent Sessions',
+  ]},
+  { code:'INPV', week:'Week 6–7', name:'Injection', desc:'The big one — XSS to SSRF', tests:[
+    'Reflected Cross Site Scripting',
+    'Stored Cross Site Scripting',
+    'HTTP Verb Tampering',
+    'HTTP Parameter Pollution',
+    'SQL Injection',
+    'LDAP Injection',
+    'XML Injection',
+    'SSI Injection',
+    'XPath Injection',
+    'IMAP SMTP Injection',
+    'Code Injection',
+    'Command Injection',
+    'Format String Injection',
+    'Incubated Vulnerability',
+    'HTTP Splitting Response Smuggling',
+    'HTTP Incoming Request Smuggling',
+    'Host Header Injection',
+    'Server-side Template Injection',
+    'Server-Side Request Forgery',
+    'Mass Assignment',
+    'CSV Injection',
+    'Prototype Pollution',
+    'Insecure Deserialization',
+  ]},
+  { code:'ERRH', week:'Week 8', name:'Error Handling', desc:'Improper errors, stack traces', tests:[
+    'Improper Error Handling',
+    'Stack Traces',
+  ]},
+  { code:'CRYP', week:'Week 8', name:'Weak Cryptography', desc:'TLS, padding oracle', tests:[
+    'Weak Transport Layer Security',
+    'Padding Oracle',
+    'Sensitive Information Sent via Unencrypted Channels',
+    'Weak Cryptographic Primitives',
+  ]},
+  { code:'BUSL', week:'Week 9', name:'Business Logic', desc:'Workflows, uploads, payment', tests:[
+    'Business Logic Data Validation',
+    'Ability to Forge Requests',
+    'Integrity Checks',
+    'Process Timing',
+    'Number of Times a Function Can Be Used Limits',
+    'Circumvention of Work Flows',
+    'Defenses Against Application Misuse',
+    'Upload of Unexpected File Types',
+    'Upload of Malicious Files',
+    'Payment Functionality',
+  ]},
+  { code:'CLNT', week:'Week 10', name:'Client-side', desc:'DOM XSS, CORS, WebSockets', tests:[
+    'DOM-Based Cross Site Scripting',
+    'JavaScript Execution',
+    'HTML Injection',
+    'Client-side URL Redirect',
+    'CSS Injection',
+    'Client-side Resource Manipulation',
+    'Cross Origin Resource Sharing',
+    'Cross Site Flashing',
+    'Clickjacking',
+    'WebSockets',
+    'Web Messaging',
+    'Browser Storage',
+    'Cross Site Script Inclusion',
+    'Reverse Tabnabbing',
+    'Client-side Template Injection',
+  ]},
+  { code:'APIT', week:'Week 11–12', name:'API Testing', desc:'BOLA, BFLA, GraphQL', tests:[
+    'API Reconnaissance',
+    'Broken Object Level Authorization (BOLA)',
+    'Excessive Data Exposure',
+    'Broken Function Level Authorization (BFLA)',
+    'GraphQL',
+  ]},
+];
+
+/* ---------------- storage ---------------- */
+const STORE_KEY = 'wstg-tracker-v1';
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) { /* corrupted storage -> fresh start */ }
+  return { checked: {}, notes: {}, theme: 'light' };
+}
+let state = load();
+
+/* study fields are shared with the bilingual reader — make sure they exist */
+state.checked    = state.checked    || {};
+state.notes      = state.notes      || {};
+state.bookmarks  = state.bookmarks  || {};
+state.testNotes  = state.testNotes  || {};
+state.srs        = state.srs        || {};
+state.theme      = state.theme      || 'light';
+
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+  catch (e) { toast('⚠ Progress can’t be saved in this browser mode'); }
+}
+
+/* ---------------- helpers ---------------- */
+const $ = sel => document.querySelector(sel);
+function testId(catIdx, testIdx) { return `${CATEGORIES[catIdx].code}-${String(testIdx + 1).padStart(2, '0')}`; }
+
+const noteTimers = {};
+function renderFlags(key) {
+  const star = state.bookmarks[key] ? '<span class="test-star" title="Bookmarked">★</span>' : '';
+  const s = state.srs[key];
+  let chip = '';
+  if (s) {
+    const box = typeof s.b === 'number' ? s.b : '?';
+    const due = typeof s.due === 'number' && s.due <= Date.now();
+    const dueTxt = typeof s.due === 'number' ? new Date(s.due).toLocaleDateString() : 'n/a';
+    chip = `<span class="srs-chip${due ? ' due' : ''}" title="SRS box ${box} · due ${dueTxt}">R</span>`;
+  }
+  return star + chip;
+}
+
+function catStats(catIdx) {
+  const cat = CATEGORIES[catIdx];
+  const done = cat.tests.reduce((n, _, i) => n + (state.checked[`${catIdx}-${i}`] ? 1 : 0), 0);
+  return { done, total: cat.tests.length };
+}
+function overallStats() {
+  let done = 0, total = 0;
+  CATEGORIES.forEach((_, i) => { const s = catStats(i); done += s.done; total += s.total; });
+  return { done, total };
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ---------------- render ---------------- */
+function renderOverall() {
+  const { done, total } = overallStats();
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  $('#overallLabel').textContent = `${done} / ${total} tests`;
+  $('#overallFill').style.width = pct + '%';
+  $('#overallPct').textContent = pct + '%';
+  document.title = `${pct}% · WSTG Tracker`;
+}
+
+function renderSchedule() {
+  const grid = $('#scheduleGrid');
+  grid.innerHTML = '';
+  CATEGORIES.forEach((cat, i) => {
+    const { done, total } = catStats(i);
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    const card = document.createElement('div');
+    card.className = 'week-card' + (pct === 100 && total > 0 ? ' done' : '') + (done > 0 && pct < 100 ? ' active' : '');
+    card.innerHTML = `
+      <span class="wk">${cat.week}</span>
+      <div class="wk-name">${cat.name}</div>
+      <div class="wk-meta">${done} of ${total} tests · ${cat.desc}</div>
+      <div class="wk-bar"><div class="wk-bar-fill" style="width:${pct}%"></div></div>`;
+    card.addEventListener('click', () => {
+      const target = document.getElementById(`cat-${i}`);
+      if (!target.classList.contains('open')) toggleCat(target, true);
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    grid.appendChild(card);
+  });
+}
+
+function toggleCat(card, forceOpen) {
+  const open = forceOpen === true ? true : !card.classList.contains('open');
+  card.classList.toggle('open', open);
+}
+
+function renderCategories() {
+  const grid = $('#catGrid');
+  grid.innerHTML = '';
+  CATEGORIES.forEach((cat, i) => {
+    const card = document.createElement('div');
+    card.className = 'cat-card';
+    card.id = `cat-${i}`;
+
+    /* header */
+    const head = document.createElement('div');
+    head.className = 'cat-head';
+    head.innerHTML = `
+      <span class="cat-code">${cat.code}</span>
+      <span class="cat-info">
+        <span class="cat-name">${cat.name}</span>
+        <span class="cat-meta">${cat.week} · ${cat.desc} · ${cat.tests.length} tests</span>
+      </span>
+      <span class="cat-progress">
+        <span class="cat-count" id="count-${i}"></span>
+        <span class="cat-ring">
+          <svg width="34" height="34" viewBox="0 0 34 34">
+            <circle class="ring-bg" cx="17" cy="17" r="14" fill="none" stroke-width="3"/>
+            <circle class="ring-fg" id="ring-${i}" cx="17" cy="17" r="14" fill="none" stroke-width="3"
+              stroke-dasharray="87.96" stroke-dashoffset="87.96"/>
+          </svg>
+          <span class="ring-text" id="ringtext-${i}">0%</span>
+        </span>
+      </span>
+      <span class="cat-chevron">▶</span>`;
+    head.addEventListener('click', () => toggleCat(card));
+    card.appendChild(head);
+
+    /* body: checklist + notes */
+    const body = document.createElement('div');
+    body.className = 'cat-body';
+
+    const list = document.createElement('ul');
+    list.className = 'test-list';
+    cat.tests.forEach((name, ti) => {
+      const li = document.createElement('li');
+      const key = `${i}-${ti}`;
+      const isDone = !!state.checked[key];
+      const hasNote = !!(state.testNotes[key] && state.testNotes[key].trim());
+      li.className = 'test-item' + (isDone ? ' checked' : '');
+      li.dataset.key = key;
+      li.innerHTML = `
+        <input type="checkbox" ${isDone ? 'checked' : ''}>
+        <span class="checkbox"></span>
+        <span class="test-body">
+          <span class="test-line">
+            <span class="test-text"><span class="test-id">${testId(i, ti)}</span><span class="test-name">${name}</span></span>
+            <span class="test-flags">${renderFlags(key)}<button type="button" class="test-note-btn${hasNote ? ' has-note' : ''}" title="Per-test notes">✎</button></span>
+          </span>
+          <span class="test-note">
+            <textarea class="test-note-ta" placeholder="Notes for ${testId(i, ti)} — requests, payloads, results…"></textarea>
+          </span>
+        </span>`;
+      const noteBtn = li.querySelector('.test-note-btn');
+      const noteWrap = li.querySelector('.test-note');
+      const noteTa = li.querySelector('.test-note-ta');
+      noteTa.value = state.testNotes[key] || '';
+      noteBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        const open = noteWrap.classList.toggle('open');
+        if (open) noteTa.focus();
+      });
+      noteWrap.addEventListener('click', e => e.stopPropagation());
+      noteTa.addEventListener('click', e => e.stopPropagation());
+      noteTa.addEventListener('input', () => {
+        state.testNotes[key] = noteTa.value;
+        noteBtn.classList.toggle('has-note', !!noteTa.value.trim());
+        clearTimeout(noteTimers[key]);
+        noteTimers[key] = setTimeout(save, 400);
+      });
+      li.addEventListener('click', () => {
+        state.checked[key] = !state.checked[key];
+        save();
+        li.classList.toggle('checked');
+        updateCatProgress(i);
+      });
+      list.appendChild(li);
+    });
+    body.appendChild(list);
+
+    const notesWrap = document.createElement('div');
+    notesWrap.className = 'notes-wrap';
+    notesWrap.innerHTML = `
+      <div class="notes-label">
+        <span>Notes — ${cat.name}</span>
+        <span class="notes-status" id="notes-status-${i}"></span>
+      </div>`;
+    const ta = document.createElement('textarea');
+    ta.placeholder = 'Findings journal: what you tested, requests sent, results, how you’d write it up…';
+    ta.value = state.notes[i] || '';
+    ta.addEventListener('input', () => {
+      state.notes[i] = ta.value;
+      save();
+      const st = $('#notes-status-' + i);
+      if (st) st.textContent = 'saved';
+    });
+    notesWrap.appendChild(ta);
+    body.appendChild(notesWrap);
+
+    card.appendChild(body);
+    grid.appendChild(card);
+    updateCatProgress(i);
+  });
+}
+
+function updateCatProgress(i) {
+  const { done, total } = catStats(i);
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const ring = $(`#ring-${i}`);
+  if (ring) ring.style.strokeDashoffset = 87.96 * (1 - done / total);
+  const rt = $(`#ringtext-${i}`);
+  if (rt) rt.textContent = pct + '%';
+  const ct = $(`#count-${i}`);
+  if (ct) ct.textContent = `${done}/${total}`;
+  renderOverall();
+  renderSchedule();
+}
+
+/* ---------------- theme ---------------- */
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', state.theme);
+}
+$('#themeBtn').addEventListener('click', () => {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  save();
+  applyTheme();
+});
+
+/* ---------------- export / import ---------------- */
+$('#exportBtn').addEventListener('click', () => {
+  const { done, total } = overallStats();
+  const payload = {
+    app: 'wstg-tracker', version: 1, exported: new Date().toISOString(),
+    progress: `${done}/${total}`, state,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `wstg-progress-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Progress exported');
+});
+
+$('#importBtn').addEventListener('click', () => $('#importFile').click());
+$('#importFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      /* accept a full export ({app, store:{…}} or legacy {state:{…}}) or a bare store */
+      const inc = (data && data.store && typeof data.store === 'object') ? data.store
+                : (data && data.state && typeof data.state === 'object') ? data.state
+                : (data && (typeof data.checked === 'object' || typeof data.bookmarks === 'object'
+                            || typeof data.testNotes === 'object' || typeof data.srs === 'object')) ? data
+                : null;
+      if (!inc) throw new Error('bad shape');
+      /* MERGE so study fields shared with the reader survive an import */
+      state = Object.assign({}, state, {
+        checked:   Object.assign({}, state.checked,   inc.checked   || {}),
+        bookmarks: Object.assign({}, state.bookmarks, inc.bookmarks || {}),
+        notes:     Object.assign({}, state.notes,     inc.notes     || {}),
+        testNotes: Object.assign({}, state.testNotes, inc.testNotes || {}),
+        srs:       Object.assign({}, state.srs,       inc.srs       || {}),
+        theme:     inc.theme || state.theme || 'light',
+      });
+      save();
+      applyTheme();
+      renderCategories();
+      renderSchedule();
+      renderOverall();
+      toast('Progress imported');
+    } catch (err) {
+      toast('Import failed — not a valid export file');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+/* ---------------- live sync from the bilingual app (and other tabs) ---------------- */
+window.addEventListener('storage', e => {
+  if (e.key !== STORE_KEY || !e.newValue) return;
+  let incoming; try { incoming = JSON.parse(e.newValue); } catch (err) { return; }
+  state.checked    = incoming.checked || {};
+  state.notes      = incoming.notes || state.notes;   // keep local notes if the writer omitted them
+  state.bookmarks  = incoming.bookmarks || state.bookmarks || {};
+  state.testNotes  = incoming.testNotes || state.testNotes || {};
+  state.srs        = incoming.srs || state.srs || {};
+  state.theme      = incoming.theme || state.theme;
+  applyTheme();
+  document.querySelectorAll('.test-item[data-key]').forEach(li => {
+    const key = li.dataset.key;
+    const on = !!state.checked[key];
+    li.classList.toggle('checked', on);
+    const cb = li.querySelector('input');
+    if (cb) cb.checked = on;
+    /* refresh bookmark star + SRS chip */
+    const flags = li.querySelector('.test-flags');
+    if (flags) {
+      const btn = flags.querySelector('.test-note-btn');
+      flags.innerHTML = renderFlags(key);
+      if (btn) flags.appendChild(btn);
+    }
+    /* refresh per-test note textarea unless the local user is editing it */
+    const ta = li.querySelector('.test-note-ta');
+    if (ta && document.activeElement !== ta) {
+      ta.value = state.testNotes[key] || '';
+      const btn = li.querySelector('.test-note-btn');
+      if (btn) btn.classList.toggle('has-note', !!ta.value.trim());
+    }
+  });
+  CATEGORIES.forEach((_, i) => updateCatProgress(i));
+});
+
+/* ---------------- boot ---------------- */
+applyTheme();
+renderCategories();
+renderSchedule();
+renderOverall();
+</script>
+</body>
+</html>

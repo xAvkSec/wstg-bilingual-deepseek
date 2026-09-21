@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="WSTG·ID shield">
+  <rect width="512" height="512" rx="96" fill="#0f1115"/>
+  <path d="M256 104 L376 104 L376 248 C376 356 320 416 256 456 C192 416 136 356 136 248 L136 104 Z" fill="#10b981"/>
+  <path d="M196 268 L238 312 L326 208" fill="none" stroke="#0f1115" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

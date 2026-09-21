@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- Document language is English by default; the app sets lang="en" / lang="id"
+     on each content column, so bilingual pronunciation is handled per-column. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta name="description" content="OWASP Web Security Testing Guide — bilingual English / Bahasa Indonesia learning adaptation. 12 categories, 115 tests.">
+<title>WSTG Bilingual — Panduan Pengujian Keamanan Web</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%9B%A1%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#10b981">
+<link rel="apple-touch-icon" href="icons/icon.svg">
+<link rel="stylesheet" href="style.css?v=7">
+</head>
+<body>
+
+<noscript>
+  <p style="max-width:40rem;margin:1.5rem auto;padding:1rem 1.25rem;border:1px solid currentColor;border-radius:8px;text-align:center">
+    <strong>JavaScript is required.</strong> This reader builds the WSTG pages in your browser — please enable JavaScript.
+    <br>
+    <span lang="id"><strong>JavaScript diperlukan.</strong> Pembaca ini menyusun halaman WSTG di peramban — aktifkan JavaScript.</span>
+  </p>
+</noscript>
+
+<a class="skip-link" href="#main">Skip to content / <span lang="id">Lewati ke konten</span></a>
+
+<header>
+  <div class="header-inner">
+    <button id="navToggle" class="icon-btn nav-toggle" type="button"
+            aria-label="Categories / Kategori" aria-controls="sidebar" aria-expanded="false"><span aria-hidden="true">☰</span></button>
+
+    <a class="brand" href="#/">
+      <h1>WSTG<span class="brand-accent">·ID</span></h1>
+      <span class="brand-sub">115 tests · EN | ID</span>
+    </a>
+
+    <div class="search-wrap" role="search">
+      <label class="sr-only" for="searchInput">Search tests / Cari ujian</label>
+      <input id="searchInput" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Search / Cari… (SQL, session, IDOR, upload)"
+             aria-describedby="searchHint">
+      <button id="searchClear" class="search-clear" type="button" aria-label="Clear search / Hapus pencarian" hidden><span aria-hidden="true">×</span></button>
+      <span id="searchHint" class="sr-only">Press / to focus search, Esc to clear</span>
+    </div>
+
+    <div class="header-actions">
+      <button id="resetBtn" class="icon-btn" type="button"
+              title="Reset progress / Setel ulang progres" aria-label="Reset progress / Setel ulang progres"><span aria-hidden="true">↺</span></button>
+      <button id="themeBtn" class="icon-btn" type="button"
+              title="Toggle theme / Ganti tema (T)" aria-label="Toggle theme / Ganti tema"><span aria-hidden="true">◐</span></button>
+    </div>
+  </div>
+  <div id="progress" aria-hidden="true"><div id="progressFill"></div></div>
+</header>
+
+<div id="scrim" class="scrim" aria-hidden="true" hidden></div>
+
+<div class="app-layout">
+  <nav id="sidebar" aria-label="Categories / Kategori"></nav>
+  <main id="main" tabindex="-1"></main>
+</div>
+
+<footer>
+  <div class="kbd-hints">
+    <kbd>←</kbd><kbd>→</kbd> page tests · <kbd>/</kbd> search · <kbd>t</kbd> theme ·
+    <kbd>m</kbd> mark studied · <kbd>Esc</kbd> leave search
+  </div>
+  <div>
+    Condensed bilingual adaptation of the
+    <a href="https://owasp.github.io/www-project-web-security-testing-guide/latest/" target="_blank" rel="noopener noreferrer">OWASP Web Security Testing Guide<span class="sr-only"> (opens in a new tab)</span></a>
+    (CC BY-SA 4.0) · Progress syncs with the <a href="./tracker/">WSTG Tracker</a> · Built with x 💛
+  </div>
+</footer>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- app.js lazy-loads the 12 data files after first paint (see DATA_FILES in js/app.js) -->
+<script src="js/app.js?v=7"></script>
+</body>
+</html>
