@@ -2,7 +2,7 @@
 
 A bilingual (English ↔ Bahasa Indonesia) web version of the **OWASP Web Security Testing Guide** — condensed learning adaptation.
 
-[![WSTG Bilingual — screenshot](docs/screenshot.png)](https://xavksec.github.io/wstg-bilingual-deepseek/)
+[![WSTG Bilingual — screenshot](docs/preview.png)](https://xavksec.github.io/wstg-bilingual-deepseek/)
 
 ## What this is
 
@@ -62,7 +62,7 @@ wstg-bilingual-deepseek/
 ├── manifest.webmanifest     ← PWA
 ├── service-worker.js        ← offline cache
 ├── icons/icon.svg
-├── docs/screenshot.png      ← README screenshot
+├── docs/preview.png      ← README screenshot
 ├── package.json        ← dev-only tooling (the app needs none of it)
 ├── playwright.config.js
 ├── tools/validate-data.mjs   ← data schema / register check
