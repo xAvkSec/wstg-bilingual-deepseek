@@ -15,7 +15,7 @@ test('home lists 12 categories, 115 tests and a study entry', async ({ page }) =
 
 test('deep link renders the bilingual test page', async ({ page }) => {
   await page.goto('/index.html#/test/INPV/05');
-  await expect(page.locator('.test-id-chip')).toContainText('WSTG-INPV-05');
+  await expect(page.locator('.test-id-chip')).toContainText('WSTG-v42-INPV-05');
   await expect(page.locator('.lang-col.en .lang-title')).toContainText('SQL Injection');
   await expect(page.locator('.lang-col.id')).toBeVisible();
 });
