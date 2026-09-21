@@ -2,13 +2,17 @@
 
 A bilingual (English ↔ Bahasa Indonesia) web version of the **OWASP Web Security Testing Guide** — condensed learning adaptation.
 
+[![WSTG Bilingual — screenshot](docs/screenshot.png)](https://xavksec.github.io/wstg-bilingual-deepseek/)
+
 ## What this is
 
 All **12 categories, 115 tests** — the complete **OWASP WSTG v4.2** (97 tests) plus **18 tests added after v4.2** — rendered as a modern, minimalist web app with EN/ID side-by-side columns. Every test carries its official `WSTG-v42-<CAT>-<nn>` identifier; post-4.2 tests show a `dev` badge. Built for learning, not for certification-reference fidelity.
 
 ## Open it
 
-Double-click `index.html`. No server, no install, no build step — works offline from `file://`.
+**Live:** <https://xavksec.github.io/wstg-bilingual-deepseek/> (installable PWA — offline-capable once loaded)
+
+Locally, double-click `index.html`. No server, no install, no build step — works offline from `file://`.
 
 ## Features
 
@@ -58,6 +62,7 @@ wstg-bilingual-deepseek/
 ├── manifest.webmanifest     ← PWA
 ├── service-worker.js        ← offline cache
 ├── icons/icon.svg
+├── docs/screenshot.png      ← README screenshot
 ├── package.json        ← dev-only tooling (the app needs none of it)
 ├── playwright.config.js
 ├── tools/validate-data.mjs   ← data schema / register check
